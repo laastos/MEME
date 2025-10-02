@@ -1,0 +1,143 @@
+# Build outputs
+*.o
+*.lo
+*.la
+.libs/
+.deps/
+stamp-h1
+
+# Autotools generated files
+Makefile
+Makefile.in
+config.h
+config.log
+config.status
+aclocal.m4
+configure
+autom4te.cache/
+libtool
+
+# Compiled executables
+src/alphtype
+src/ama
+src/ame
+src/centrimo
+src/ceqlogo
+src/clustalw2fasta
+src/clustalw2phylip
+src/compute-prior-dist
+src/compute-uniform-priors
+src/create-priors
+src/fasta-get-markov
+src/fasta-shuffle-letters
+src/fimo
+src/fisher_exact
+src/fitevd
+src/gendb
+src/getsize
+src/glam2*
+src/gomo*
+src/import-html-template
+src/llr
+src/mast
+src/mcast
+src/meme
+src/meme2*
+src/meme-get-motif
+src/mhmm*
+src/momo*
+src/motif-shuffle-columns
+src/motiph
+src/pmp_bf
+src/qvalue
+src/ramen
+src/ranksum_test
+src/reconcile-tree-alignment
+src/reduce-alignment
+src/remove-alignment-gaps
+src/shadow
+src/spamo
+src/tomtom
+src/xsltproc_lite
+
+# Generated scripts
+scripts/*.pl
+scripts/fasta-*
+scripts/glam2*
+scripts/dreme*
+scripts/*2meme
+scripts/chen2meme
+scripts/elm2meme
+scripts/hart2meme-bkg
+scripts/hartemink2psp
+scripts/iupac2meme
+scripts/jaspar2meme
+scripts/mast_xml_to_*
+scripts/matrix2meme
+scripts/meme-chip*
+scripts/meme-rename
+scripts/meme_xml_to_html
+scripts/nmica2meme
+scripts/priority2meme
+scripts/psp-gen
+scripts/rna2meme
+scripts/rsat-*
+scripts/scpd2meme
+scripts/sites2meme
+scripts/taipale2meme
+scripts/tamo2meme
+scripts/transfac2meme
+scripts/uniprobe2meme
+
+# Generated property files
+MemeSuite.properties
+
+# Documentation build outputs
+doc/Makefile
+doc/css/Makefile
+doc/examples/Makefile
+doc/examples/compute_prior_dist_example_output_files/Makefile
+doc/examples/sample_opal_scripts/Makefile
+doc/images/Makefile
+doc/js/Makefile
+
+# Test outputs
+tests/Makefile
+tests/*/Makefile
+tests/scripts/test_driver
+tests/scripts/test-suite.log
+tests/scripts/*.log
+tests/scripts/*.trs
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Archive files
+ARCHIVE_DATE
+ARCHIVE_REVISION
+
+# Shared directories
+share/
+
+# Distribution files
+*.tar.gz
+*.zip
+
+# Installation directories (if built locally)
+/bin/
+/lib/
+/include/
+/share/
