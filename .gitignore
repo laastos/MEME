@@ -89,8 +89,20 @@ scripts/tamo2meme
 scripts/transfac2meme
 scripts/uniprobe2meme
 
+# Python cache files
+scripts/__pycache__/
+__pycache__/
+*.pyc
+*.pyo
+
 # Generated property files
 MemeSuite.properties
+
+# Generated configuration and template files
+etc/*.js
+etc/*.xsl
+etc/*.conf
+doc/js/*.js
 
 # Documentation build outputs
 doc/Makefile
@@ -108,6 +120,8 @@ tests/scripts/test_driver
 tests/scripts/test-suite.log
 tests/scripts/*.log
 tests/scripts/*.trs
+tests/results/
+*_test_output/
 
 # IDE and editor files
 .vscode/
@@ -141,3 +155,7 @@ share/
 /lib/
 /include/
 /share/
+
+# Test and sample files
+test_sequences.fasta
+*.fasta.bak

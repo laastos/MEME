@@ -15,6 +15,9 @@
 #include <stdlib.h>
 #include "utils.h"
 
+// Global variable definition (declared as extern in header)
+double* log_factorial;
+
 //double _mm_nats;
 double _mm_nats = 0;
 double _log10;

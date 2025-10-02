@@ -18,7 +18,7 @@ use File::Spec::Functions qw(catfile splitdir splitpath tmpdir abs2rel no_upward
 use HTML::Template;
 use Sys::Hostname;
 
-use lib qw(/lib/perl);
+use lib qw(/home/innovare/meme/lib/perl);
 use ExecUtils qw(invoke);
 
 # Setup logging
@@ -28,11 +28,11 @@ eval {
   Log::Log4perl->import();
 };
 unless ($@) {
-  Log::Log4perl::init('/etc/logging.conf');
+  Log::Log4perl::init('/home/innovare/meme/etc/logging.conf');
   $logger = Log::Log4perl->get_logger('meme.service.utils');
 }
 
-my $service_invocation_log_dir = '/LOGS';
+my $service_invocation_log_dir = '/home/innovare/meme/LOGS';
 my $tmpdir = '';
 # use the perl default if none is supplied or the replace fails
 $tmpdir = &tmpdir() if ($tmpdir eq '' || $tmpdir =~ m/^\@TMP[_]DIR\@$/);
@@ -98,7 +98,7 @@ sub update_status {
 
   my $fh;
   sysopen($fh, $output_file, O_CREAT | O_WRONLY | O_TRUNC) or log_and_die("Failed to open \"$output_file\".");
-  my $template = HTML::Template->new(filename => '/etc/job_status.tmpl');
+  my $template = HTML::Template->new(filename => '/home/innovare/meme/etc/job_status.tmpl');
   $template->param(program => $program, files => \@found_files, msgs => $msg_list, status => $status);
   print $fh $template->output;
   close($fh) or log_and_die("Failed to close \"$output_file\".");

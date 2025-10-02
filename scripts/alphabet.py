@@ -1,7 +1,7 @@
 #!@WHICHPYTHON@
 
 from __future__ import with_statement
-import collections, itertools, json, math, re, string, sys
+import collections, itertools, json, math, re, string, sys, functools
 from xml.sax.saxutils import quoteattr
 
 LabColour = collections.namedtuple('LabColour', ['l', 'a', 'b'])
@@ -9,7 +9,7 @@ LabColour = collections.namedtuple('LabColour', ['l', 'a', 'b'])
 def alphabetSymbolCompare(x, y):
     """Compares 2 strings of alphabet symbols"""
     if len(x) == len(y):
-        for a, b in itertools.izip(x, y):
+        for a, b in zip(x, y):
             # letters before numbers and symbols
             if a.isalpha():
                 if b.isalpha():
@@ -216,6 +216,7 @@ class AlphabetParseError(Exception):
     def __str__(self):
         return repr(self.value)
 
+@functools.total_ordering
 class AlphabetReaderSymbol(object):
     """Temporary information storage for an alphabet reader"""
     def __init__(self, symbol, name, colour, complement = None, comprise = None):
@@ -227,7 +228,7 @@ class AlphabetReaderSymbol(object):
         self.aliases = []
         self.alias = False
 
-    def __cmp__(self, obj):
+    def _cmp(self, obj):
         if obj == None:
             return -1
         if not(isinstance(obj, AlphabetReaderSymbol)):
@@ -242,6 +243,12 @@ class AlphabetReaderSymbol(object):
                 return -1
             else:
                 return alphabetSymbolCompare(self.comprise, obj.comprise)
+
+    def __eq__(self, obj):
+        return self._cmp(obj) == 0
+
+    def __lt__(self, obj):
+        return self._cmp(obj) < 0
 
 
     def __str__(self):
@@ -302,7 +309,7 @@ class AlphabetReader(object):
                 comprise_lookup[sym.comprise].append(sym)
             else:
                 comprise_lookup[sym.comprise] = [sym]
-        for comprise, syms in comprise_lookup.iteritems():
+        for comprise, syms in comprise_lookup.items():
             if len(comprise) == 1:
                 # alias for a core symbol
                 core_sym = self.sym_lookup[comprise]
@@ -356,7 +363,7 @@ class AlphabetReader(object):
         value = 0.4
         step = 360 / ncolours
         colours = []
-        for i in xrange(ncolours):
+        for i in range(ncolours):
             rgb = _hsv2rgb(step * i, sat, value)
             colours.append((rgb, _rgb2lab(rgb)))
         # for each of the unique colours find the closest colour in the generated colours and remove it
@@ -364,8 +371,8 @@ class AlphabetReader(object):
             best_dist = None
             best_i = None
             best_j = None
-            for i in xrange(len(uniques)):
-                for j in xrange(len(colours)):
+            for i in range(len(uniques)):
+                for j in range(len(colours)):
                     dist = _lab_dist(uniques[i], colours[j][1])
                     if best_dist == None or dist < best_dist:
                         best_dist = dist
@@ -399,7 +406,7 @@ class AlphabetReader(object):
                 complement_list.append(component_obj.complement)
             else:
                 # all the symbols had complements
-                complement = ''.join(sorted(complement_list, cmp=alphabetSymbolCompare))
+                complement = ''.join(sorted(complement_list, key=functools.cmp_to_key(alphabetSymbolCompare)))
                 if complement in comprise_lookup:
                     sym_obj.complement = comprise_lookup[complement].symbol
 
@@ -448,15 +455,15 @@ class AlphabetReader(object):
         # check assumptions
         if self.parsed:
             raise RuntimeError("Parsing is already done!")
-        if not(isinstance(symbol, basestring) and len(symbol) == 1):
+        if not(isinstance(symbol, str) and len(symbol) == 1):
             raise RuntimeError("Expected symbol to be a single character")
-        if name != None and not(isinstance(name, basestring)):
+        if name != None and not(isinstance(name, str)):
             raise RuntimeError("Expected name to be a string")
-        if colour != None and not(isinstance(colour, (int, long))):
+        if colour != None and not(isinstance(colour, int)):
             raise RuntimeError("Expected colour to be a unsigned 24 bit number")
-        if complement != None and not(isinstance(complement, basestring) and len(complement) == 1):
+        if complement != None and not(isinstance(complement, str) and len(complement) == 1):
             raise RuntimeError("Expected complement symbol to be a single character")
-        if comprise != None and not(isinstance(comprise, basestring)):
+        if comprise != None and not(isinstance(comprise, str)):
             raise RuntimeError("Expected name to be a string")
         if complement != None and comprise != None:
             raise RuntimeError("Expected only comprise or complement not both")
@@ -470,7 +477,7 @@ class AlphabetReader(object):
         # we can do this because core symbols must be defined before ambiguous symbols
         if comprise != None:
             # sort
-            compriseList = sorted(comprise, cmp=alphabetSymbolCompare)
+            compriseList = sorted(comprise, key=functools.cmp_to_key(alphabetSymbolCompare))
             # filter out duplicates
             comprise = ''.join([e for i, e in enumerate(compriseList) if i == 0 or compriseList[i-1] != e])
             for sym in comprise:
@@ -484,7 +491,7 @@ class AlphabetReader(object):
         # enforce the restriction that ? may only be a wildcard
         if symbol == "?":
             # check that this is the wildcard
-            if comprise == None or comprise != ''.join(sorted([sym.symbol for sym in self.core_syms], cmp=alphabetSymbolCompare)):
+            if comprise == None or comprise != ''.join(sorted([sym.symbol for sym in self.core_syms], key=functools.cmp_to_key(alphabetSymbolCompare))):
                 raise AlphabetParseError("symbol ? is reserved for wildcards only")
         # check for lower and upper case letters
         if symbol.islower():
@@ -677,7 +684,7 @@ class Alphabet(object):
                 alph_sym_1.complement = alph_sym_2.index
         # link comprising symbols
         # core symbols have themselves in the comprise list
-        for i in xrange(self.ncore):
+        for i in range(self.ncore):
             self.symbols[i].comprise = frozenset([i])
         # ambiguous symbols link to the core symbols
         for sym_obj in reader.ambig_syms:
@@ -701,11 +708,11 @@ class Alphabet(object):
             for alph_sym in self.symbols:
               self.comp_symbols[alph_sym.symbol] = self.getComplement(alph_sym.symbol)
         # try to determine a pair of symbols that make up each ambiguous symbol
-        symbols_by_count = [[] for _ in xrange(self.ncore + 1)]
+        symbols_by_count = [[] for _ in range(self.ncore + 1)]
         for alph_sym in self.symbols:
             symbols_by_count[len(alph_sym.comprise)].append(alph_sym)
         for alph_sym in self.symbols[self.ncore:]:
-            for j in xrange(1, len(alph_sym.comprise)):
+            for j in range(1, len(alph_sym.comprise)):
                 for part in symbols_by_count[j]:
                     if not(part.comprise < alph_sym.comprise):
                         continue
@@ -740,7 +747,7 @@ class Alphabet(object):
 
     def getColour(self, sym):
         """Get the colour for this symbol"""
-        if isinstance(sym, (int, long)):
+        if isinstance(sym, int):
             if sym < len(self.symbols):
                 return self.symbols[sym].colour
             raise RuntimeError("Symbol index " + sym + " does not exist in alphabet")
@@ -751,7 +758,7 @@ class Alphabet(object):
 
     def getMutedColour(self, sym):
         """Get the muted colour for this symbol"""
-        if isinstance(sym, (int, long)):
+        if isinstance(sym, int):
             if sym < len(self.symbols):
                 return _lighten(self.symbols[sym].colour)
             raise RuntimeError("Symbol index " + str(sym) + " does not exist in alphabet")
@@ -807,7 +814,7 @@ class Alphabet(object):
 
     def getComprisingIndexes(self, sym):
         """Retrieve the indexes of the comprising core symbols (immutable)"""
-        if isinstance(sym, (int, long)):
+        if isinstance(sym, int):
             if sym < len(self.symbols):
                 return self.symbols[sym].comprise
         else:
@@ -817,7 +824,7 @@ class Alphabet(object):
 
     def getPairIndexes(self, sym):
         """Retrieve the indexes of the comprising core symbols (immutable)"""
-        if isinstance(sym, (int, long)):
+        if isinstance(sym, int):
             if sym < len(self.symbols):
                 return self.symbols[sym].pair
         else:
@@ -868,7 +875,7 @@ class Alphabet(object):
 
     def getComplementIndex(self, sym):
         """Retrieve the index of the complement of the symbol"""
-        if isinstance(sym, (int, long)):
+        if isinstance(sym, int):
             if sym < len(self.symbols):
                 return self.symbols[sym].complement
         else:
@@ -941,7 +948,7 @@ class Alphabet(object):
         """Create the text representation of the alphabet"""
         out = []
         # output core symbols with complements
-        for i in xrange(self.ncore):
+        for i in range(self.ncore):
             sym1 = self.symbols[i]
             # check symbol has a complement (which we assume is symetric)
             if sym1.complement == None:
@@ -954,16 +961,16 @@ class Alphabet(object):
             out.append(sym2.asText())
             out.append("\n")
         # output core symbols without complements
-        for i in xrange(self.ncore):
+        for i in range(self.ncore):
             sym = self.symbols[i]
             if sym.complement != None:
                 continue
             out.append(sym.asText())
             out.append("\n")
         # output ambiguous symbols
-        for i in xrange(self.ncore, len(self.symbols)):
+        for i in range(self.ncore, len(self.symbols)):
             sym = self.symbols[i]
-            comprise_str = "".join(sorted([self.symbols[symi].symbol for symi in sym.comprise], cmp=alphabetSymbolCompare))
+            comprise_str = "".join(sorted([self.symbols[symi].symbol for symi in sym.comprise], key=functools.cmp_to_key(alphabetSymbolCompare)))
             out.append(sym.asText())
             out.append(" = ")
             out.append(comprise_str)
@@ -975,7 +982,7 @@ class Alphabet(object):
                     out.append(comprise_str)
                     out.append("\n")
         # output aliases for core symbols
-        for i in xrange(self.ncore):
+        for i in range(self.ncore):
             sym = self.symbols[i]
             if sym.aliases != None:
                 for alias in sym.aliases:
@@ -1139,7 +1146,7 @@ def getBySeq(seq, alphabets = predef):
         prime = 0
         alt = 0
         other = 0
-        for sym, count in counts.iteritems():
+        for sym, count in counts.items():
             if alphabet.isCoreSymbol(sym):
                 seen.add(alphabet.getIndex(sym))
                 if alphabet.isPrimeSymbol(sym):

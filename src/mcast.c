@@ -48,7 +48,7 @@
 #include "utils.h"
 
 //FIXME TLB
-char *OUTPUT_DIRNAME;
+// OUTPUT_DIRNAME definition removed - declared as extern in fitevd.h
 
 typedef enum { MEME_FORMAT, TRANSFAC_FORMAT } MOTIF_FORMAT_T;
 

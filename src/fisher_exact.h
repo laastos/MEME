@@ -12,7 +12,7 @@
 
 #ifndef FISHER_EXACT_H_
 #define FISHER_EXACT_H_
-double* log_factorial;
+extern double* log_factorial;
 void fisher_exact_init(int len);
 double fet(int a, int b, int c, int d);
 void fisher_exact_destruct();

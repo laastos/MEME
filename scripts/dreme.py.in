@@ -170,11 +170,11 @@ class PNGLogoWriter(LogoWriter):
         try:
             png_maker = subprocess.Popen(args)
             if (png_maker.wait() != 0):
-                print >> sys.stderr, ("Failed to create PNG file. "
-                        "Have you got ghostscript installed?")
+                print("Failed to create PNG file. "
+                        "Have you got ghostscript installed?", file=sys.stderr)
         except OSError:
-            print >> sys.stderr, ("Failed to create PNG file. "
-                    "Have you got ghostscript installed?")
+            print("Failed to create PNG file. "
+                    "Have you got ghostscript installed?", file=sys.stderr)
 
         os.remove(eps_file)
 
@@ -202,11 +202,11 @@ class BothLogoWriter(LogoWriter):
         try:
             png_maker = subprocess.Popen(args)
             if (png_maker.wait() != 0):
-                print >> sys.stderr, ("Failed to create PNG file. "
-                        "Have you got ghostscript installed?")
+                print("Failed to create PNG file. "
+                        "Have you got ghostscript installed?", file=sys.stderr)
         except OSError:
-            print >> sys.stderr, ("Failed to create PNG file. "
-                    "Have you got ghostscript installed?")
+            print("Failed to create PNG file. "
+                    "Have you got ghostscript installed?", file=sys.stderr)
 
 # gets the version of the ghostscript program
 _gs_version = []
@@ -410,7 +410,7 @@ def print_words(word_pvalues, alph):
     """ Print out the significantly enriched words.
         Input is a dictionary produced by apply_fisher_test.
     """
-    print >> sys.stdout, "\n# ORIGINAL VALUES\n# WORD\tRC_WORD\tp\tP\tn\tN\tp-value\tE-value"
+    print("\n# ORIGINAL VALUES\n# WORD\tRC_WORD\tp\tP\tn\tN\tp-value\tE-value")
 
     sorted_keys = sorted_re_pvalue_keys(word_pvalues)
     for word in sorted_keys:
@@ -430,8 +430,8 @@ def print_words(word_pvalues, alph):
         ev_string = sprint_logx(log_Evalue, 1, _pv_format)
         dist_str = ""
         if get_type(r) == "consensus": dist_str = "distance= " + str(r[5])
-        print >> sys.stdout, "%s %s %6d %6d %6d %6d %s %s %s" % \
-                (word, rc_word, r[0], r[1], r[2], r[3], pv_string, ev_string, dist_str)
+        print("%s %s %6d %6d %6d %6d %s %s %s" % \
+                (word, rc_word, r[0], r[1], r[2], r[3], pv_string, ev_string, dist_str))
 
 
 def apply_fisher_test(pos_sequence_counts, neg_sequence_counts, P, N):
@@ -757,10 +757,10 @@ def find_best_secondary_re(prim_re, pad, mink, maxk, ngen, log_add_pthresh, use_
     neg_left_flank = [s[:pad] for s in neg_aln]
     neg_right_flank = [s[w+pad:] for s in neg_aln]
     if _verbosity >= NORMAL_VERBOSE:
-        print "Finding secondary RE in left flank..."
+        print("Finding secondary RE in left flank...")
     left_re_pvalues = re_find_cores(pos_left_flank, neg_left_flank, ngen, mink, maxk, log_add_pthresh, alph, given_only)
     if _verbosity >= NORMAL_VERBOSE:
-        print "Finding secondary RE in right flank..."
+        print("Finding secondary RE in right flank...")
     right_re_pvalues = re_find_cores(pos_right_flank, neg_right_flank, ngen, mink, maxk, log_add_pthresh, alph, given_only)
 
     #
@@ -771,15 +771,15 @@ def find_best_secondary_re(prim_re, pad, mink, maxk, ngen, log_add_pthresh, use_
     left_offset = get_best_offset(left_re, pos_left_flank, alph)
     left_pad = pad - len(left_re) - left_offset
     if _verbosity >= NORMAL_VERBOSE:
-        print "Best left p-value is %s (p=%s off=%d pad=%d)" % \
-            (sprint_logx(left_pvalue, 1, _pv_format), left_re, left_offset, left_pad)
+        print("Best left p-value is %s (p=%s off=%d pad=%d)" % \
+            (sprint_logx(left_pvalue, 1, _pv_format), left_re, left_offset, left_pad))
 
     # Try right:
     (right_pvalue, right_re) = min([ (right_re_pvalues[re][4],re) for re in right_re_pvalues] )
     right_offset = get_best_offset(right_re, pos_right_flank, alph)
     right_pad = right_offset
     if _verbosity >= NORMAL_VERBOSE:
-        print "Best right p-value is %s (p=%s off=%d pad=%d)" % \
+        print("Best right p-value is %s (p=%s off=%d pad=%d)" % \
             (sprint_logx(right_pvalue, 1, _pv_format), right_re, right_offset, right_pad)
 
     # Determine best secondary RE.
@@ -787,7 +787,7 @@ def find_best_secondary_re(prim_re, pad, mink, maxk, ngen, log_add_pthresh, use_
     if right_pvalue < left_pvalue:
         (scnd_re, scnd_pad, scnd_pvalue, flank_seqs, scnd_side) = (right_re, right_pad, right_pvalue, pos_right_flank, 'right')
     if _verbosity >= NORMAL_VERBOSE:
-        print "Best secondary RE %s (p=%s side= %s space= %d)" % \
+        print("Best secondary RE %s (p=%s side= %s space= %d)" % \
             (scnd_re, sprint_logx(scnd_pvalue, 1, _pv_format), scnd_side, scnd_pad)
 
     # Combine the primary with the best secondary RE
@@ -812,7 +812,7 @@ def refine_from_consensus(re_pvalues, consensus, nref, pos_seqs, neg_seqs, alph,
     # get optimum Hamming distance from the consensus
     (dist, log_pvalue, p, P, n, N, aln) = hamming.get_best_hamming_alignment(consensus, pos_seqs, neg_seqs, alph, given_only)
     if _verbosity >= NORMAL_VERBOSE:
-        print "Best consensus %s distance %d (p=%s)" % \
+        print("Best consensus %s distance %d (p=%s)" % \
             (consensus, dist, sprint_logx(log_pvalue, 1, _pv_format))
 
     # Do one step of "EM-like" alignment to get rid of Ns in consensus
@@ -820,7 +820,7 @@ def refine_from_consensus(re_pvalues, consensus, nref, pos_seqs, neg_seqs, alph,
     consensus = get_consensus_from_aln(aln, alph)
     (dist, log_pvalue, p, P, n, N, aln) = hamming.get_best_hamming_alignment(consensus, pos_seqs, neg_seqs, alph, given_only)
     if _verbosity >= NORMAL_VERBOSE:
-        print "Best consensus after EM-like step %s distance %d (p=%s)" % \
+        print("Best consensus after EM-like step %s distance %d (p=%s)" % \
             (consensus, dist, sprint_logx(log_pvalue, 1, _pv_format))
 
     # Refine the consensus using heuristically estimated Hamming-1 neighbors
@@ -832,7 +832,7 @@ def refine_from_consensus(re_pvalues, consensus, nref, pos_seqs, neg_seqs, alph,
     re_refine_all(re_pvalues, candidate_pvalues, nref, pos_seqs, neg_seqs, alph, given_only, dist)
     (log_pvalue, consensus) = min([ (re_pvalues[cons][4], cons) for cons in re_pvalues] )
     if _verbosity >= NORMAL_VERBOSE:
-        print "Best refined %s %s (p=%s)" % \
+        print("Best refined %s %s (p=%s)" % \
             (get_type(re_pvalues[consensus]), consensus, sprint_logx(log_pvalue, 1, _pv_format))
 
 
@@ -854,7 +854,7 @@ def refine_from_re(re_pvalues, re, nref, pos_seqs, neg_seqs, alph, given_only):
     #
     new_pvalue = compute_exact_re_enrichment(re, pos_seqs, neg_seqs, alph, given_only)
     if _verbosity >= NORMAL_VERBOSE:
-        print "Extended RE is %s (p=%s)..." % (re,  sprint_logx(new_pvalue[4], 1, _pv_format))
+        print("Extended RE is %s (p=%s)..." % (re,  sprint_logx(new_pvalue[4], 1, _pv_format)))
 
     #
     # Refine the new RE allowing all replacements.
@@ -867,7 +867,7 @@ def refine_from_re(re_pvalues, re, nref, pos_seqs, neg_seqs, alph, given_only):
     new_re_pvalues = re_refine_all(re_pvalues, candidate_pvalues, nref, pos_seqs, neg_seqs, alph, given_only)
     (new_pvalue, new_re) = min([ (new_re_pvalues[re][4],re) for re in new_re_pvalues] )
     if _verbosity >= NORMAL_VERBOSE:
-        print "Refined RE is %s (p=%s)..." % (new_re,  sprint_logx(new_pvalue, 1, _pv_format))
+        print("Refined RE is %s (p=%s)..." % (new_re,  sprint_logx(new_pvalue, 1, _pv_format)))
 
 
 def get_type(pvalue_record):
@@ -934,12 +934,12 @@ def re_refine_all(re_pvalues, candidate_pvalues, nref, pos_seqs, neg_seqs, alph,
         step += 1
 
         if _verbosity >= NORMAL_VERBOSE:
-            print "%d: Sorting %d REs..." % (step, len(improved_re_pvalues))
+            print("%d: Sorting %d REs..." % (step, len(improved_re_pvalues)))
         sorted_keys = sorted_re_pvalue_keys(improved_re_pvalues)
         best_re = sorted_keys[0]
         best_pvalue = improved_re_pvalues[best_re][4]
         if _verbosity >= NORMAL_VERBOSE:
-            print "Best candidate p-value is %s (%s)" % (sprint_logx(best_pvalue, 1, _pv_format), best_re)
+            print("Best candidate p-value is %s (%s)" % (sprint_logx(best_pvalue, 1, _pv_format), best_re))
         # get the top nref REs
         candidate_pvalues = {}
         for re in sorted_keys[:nref]:
@@ -952,7 +952,7 @@ def re_refine_all(re_pvalues, candidate_pvalues, nref, pos_seqs, neg_seqs, alph,
         else:
             improved_re_pvalues = word_refine(re_pvalues, candidate_pvalues, done_re_list, pos_seqs, neg_seqs, alph, given_only)
         if _verbosity >= NORMAL_VERBOSE:
-            print "Improved %d REs..." % len(improved_re_pvalues)
+            print("Improved %d REs..." % len(improved_re_pvalues))
 
         # Add improved REs to list to return.
         for re in improved_re_pvalues:
@@ -977,7 +977,7 @@ def re_refine(re_pvalues, candidate_pvalues, done_re_list, pos_seqs, neg_seqs, a
 
     n_re = len(candidate_pvalues)
     if _verbosity >= NORMAL_VERBOSE:
-        print "Refining %d REs..." % (n_re)
+        print("Refining %d REs..." % (n_re))
 
     # Refine each RE in candidate list
     for re in candidate_pvalues:
@@ -985,11 +985,11 @@ def re_refine(re_pvalues, candidate_pvalues, done_re_list, pos_seqs, neg_seqs, a
         # skip if we've previously specialized this RE
         if done_re_list.has_key(re):
             if _verbosity >= NORMAL_VERBOSE:
-                print "Already refined", re
+                print("Already refined", re)
             continue
         else:
             if _verbosity >= NORMAL_VERBOSE:
-                print "Refining RE", re
+                print("Refining RE", re)
             done_re_list[re] = 1
 
         w = len(re)
@@ -1036,7 +1036,7 @@ def word_refine(re_pvalues, candidate_pvalues, done_list, pos_seqs, neg_seqs, al
 
     n_words = len(candidate_pvalues)
     if _verbosity >= NORMAL_VERBOSE:
-        print "Refining %d words..." % (n_words)
+        print("Refining %d words..." % (n_words))
 
     # Refine each WORD in candidate list
     for word in candidate_pvalues:
@@ -1044,11 +1044,11 @@ def word_refine(re_pvalues, candidate_pvalues, done_list, pos_seqs, neg_seqs, al
         # skip if we've previously specialized this word
         if done_list.has_key(word):
             if _verbosity >= NORMAL_VERBOSE:
-                print "Consensus", word, "already refined"
+                print("Consensus", word, "already refined")
             continue
         else:
             if _verbosity >= NORMAL_VERBOSE:
-                print "Refining consensus", word, "..."
+                print("Refining consensus", word, "...")
             done_list[word] = 1
 
         # get estimated refinements of this word
@@ -1058,7 +1058,7 @@ def word_refine(re_pvalues, candidate_pvalues, done_list, pos_seqs, neg_seqs, al
         # save the exact record in the real p-values dictionary
         re_pvalues[word] = actual_record
         if _verbosity >= NORMAL_VERBOSE:
-            print "Actual p-value is %s (%s)" % (sprint_logx(actual_record[4], 1, _pv_format), word)
+            print("Actual p-value is %s (%s)" % (sprint_logx(actual_record[4], 1, _pv_format), word))
 
         # add the records with estimated p-values better than current word's
         for new_word in estimated_records:
@@ -1201,10 +1201,10 @@ def re_find_cores(pos_seqs, neg_seqs, ngen, minw, maxw, log_add_pthresh, alph, g
     # in each of the two input sets of sequences.
     #
     if _verbosity >= NORMAL_VERBOSE:
-        print "Counting positive sequences with each word..."
+        print("Counting positive sequences with each word...")
     pos_seq_counts = count_seqs_with_words(pos_seqs, minw, maxw, alph, given_only)
     if _verbosity >= NORMAL_VERBOSE:
-        print "Counting negative sequences with each word..."
+        print("Counting negative sequences with each word...")
     neg_seq_counts = count_seqs_with_words(neg_seqs, minw, maxw, alph, given_only)
 
     #
@@ -1213,7 +1213,7 @@ def re_find_cores(pos_seqs, neg_seqs, ngen, minw, maxw, log_add_pthresh, alph, g
     #
     nwords = len(pos_seq_counts)
     if _verbosity >= NORMAL_VERBOSE:
-        print "Applying Fisher's Exact Test to {0:d} words...".format(nwords)
+        print("Applying Fisher's Exact Test to {0:d} words...".format(nwords))
     word_pvalues = apply_fisher_test(pos_seq_counts, neg_seq_counts, 
             len(pos_seqs), len(neg_seqs))
 
@@ -1447,19 +1447,19 @@ def run_xml_transformations(outdir):
     text = os.path.join(outdir, 'dreme.txt')
     if _html_prog != None and os.access(_html_prog, os.X_OK):
         if _verbosity >= NORMAL_VERBOSE:
-            print "Creating HTML file."
+            print("Creating HTML file.")
         if (subprocess.call([_html_prog, xml, html]) != 0):
-            print >> sys.stderr, "Failed to create HTML file."
+            print("Failed to create HTML file.", file=sys.stderr)
     else:
-        print >> sys.stderr, "Failed to find program for transforming XML into HTML.\n"
+        print("Failed to find program for transforming XML into HTML.\n", file=sys.stderr)
 
     if _txt_prog != None and os.access(_txt_prog, os.X_OK):
         if _verbosity >= NORMAL_VERBOSE:
-            print "Creating text file."
+            print("Creating text file.")
         if (subprocess.call([_txt_prog, xml, text]) != 0):
-            print >> sys.stderr, "Failed to create text file."
+            print("Failed to create text file.", file=sys.stderr)
     else:
-        print >> sys.stderr, "Failed to find program for transforming XML into text.\n"
+        print("Failed to find program for transforming XML into text.\n", file=sys.stderr)
 
 
 def timeout_handler(signum, frame):
@@ -1610,7 +1610,7 @@ def main():
 
     # no arguments: print usage
     if len(sys.argv) == 1:
-        print >> sys.stderr, usage; sys.exit(1)
+        print(usage, file=sys.stderr); sys.exit(1)
 
     # parse command line
     i = 1
@@ -1620,12 +1620,12 @@ def main():
           clobber = False
           i += 1;
           try: outdir = sys.argv[i]
-          except: print >> sys.stderr, usage; sys.exit(1)
+          except: print(usage, file=sys.stderr); sys.exit(1)
         elif (arg == "-oc"):
             clobber = True
             i += 1;
             try: outdir = sys.argv[i]
-            except: print >> sys.stderr, usage; sys.exit(1)
+            except: print(usage, file=sys.stderr); sys.exit(1)
         elif (arg == "-dna"):
             alph_name = "DNA"
         elif (arg == "-rna"):
@@ -1635,15 +1635,15 @@ def main():
         elif (arg == "-alph"):
             i += 1
             try: alph_file_name = sys.argv[i]
-            except: print >> sys.stderr, usage; sys.exit(1)
+            except: print(usage, file=sys.stderr); sys.exit(1)
         elif (arg == "-p"):
             i += 1
             try: pos_seq_file_name = sys.argv[i]
-            except: print >> sys.stderr, usage; sys.exit(1)
+            except: print(usage, file=sys.stderr); sys.exit(1)
         elif (arg == "-n"):
             i += 1
             try: neg_seq_file_name = sys.argv[i]
-            except: print >> sys.stderr, usage; sys.exit(1)
+            except: print(usage, file=sys.stderr); sys.exit(1)
         elif (arg == "-norc"):
             given_only = True
         elif (arg == "-c"):
@@ -1651,69 +1651,69 @@ def main():
         elif (arg == "-minw"):
             i += 1
             try: minw = int(sys.argv[i], 10)
-            except: print >> sys.stderr, usage; sys.exit(1)
+            except: print(usage, file=sys.stderr); sys.exit(1)
         elif (arg == "-maxw"):
             i += 1
             try: maxw = int(sys.argv[i], 10)
-            except: print >> sys.stderr, usage; sys.exit(1)
+            except: print(usage, file=sys.stderr); sys.exit(1)
         elif (arg == "-w"):
             i += 1
             try: minw = maxw = int(sys.argv[i], 10)
-            except: print >> sys.stderr, usage; sys.exit(1)
+            except: print(usage, file=sys.stderr); sys.exit(1)
         elif (arg == "-mink"):
             i += 1
             try: mink = int(sys.argv[i], 10)
-            except: print >> sys.stderr, usage; sys.exit(1)
+            except: print(usage, file=sys.stderr); sys.exit(1)
         elif (arg == "-maxk"):
             i += 1
             try: maxk = int(sys.argv[i], 10)
-            except: print >> sys.stderr, usage; sys.exit(1)
+            except: print(usage, file=sys.stderr); sys.exit(1)
         elif (arg == "-k"):
             i += 1
             try: mink = maxk = int(sys.argv[i], 10)
-            except: print >> sys.stderr, usage; sys.exit(1)
+            except: print(usage, file=sys.stderr); sys.exit(1)
         elif (arg == "-g"):
             i += 1
             try: ngen = int(sys.argv[i], 10)
-            except: print >> sys.stderr, usage; sys.exit(1)
+            except: print(usage, file=sys.stderr); sys.exit(1)
         elif (arg == "-r"):
             i += 1
             try: nref = int(sys.argv[i], 10)
-            except: print >> sys.stderr, usage; sys.exit(1)
+            except: print(usage, file=sys.stderr); sys.exit(1)
         elif (arg == "-e"):
             i += 1
             try: ethresh = float(sys.argv[i])
-            except: print >> sys.stderr, usage; sys.exit(1)
+            except: print(usage, file=sys.stderr); sys.exit(1)
         elif (arg == "-s"):
             i += 1
             try: seed = int(sys.argv[i], 10)
-            except: print >> sys.stderr, usage; sys.exit(1)
+            except: print(usage, file=sys.stderr); sys.exit(1)
         elif (arg == "-v"):
             i += 1
             try: _verbosity = int(sys.argv[i], 10)
-            except: print >> sys.stderr, usage; sys.exit(1)
+            except: print(usage, file=sys.stderr); sys.exit(1)
             if not (_verbosity > 0 and _verbosity < 6) :
-                print >> sys.stderr, usage; sys.exit(1)
+                print(usage, file=sys.stderr); sys.exit(1)
         elif (arg == "-a"):
             i += 1
             try: add_pthresh = float(sys.argv[i])
-            except: print >> sys.stderr, usage; sys.exit(1)
+            except: print(usage, file=sys.stderr); sys.exit(1)
         elif (arg == "-m"):
             i += 1
             try: max_motifs = int(sys.argv[i], 10)
-            except: print >> sys.stderr, usage; sys.exit(1)
+            except: print(usage, file=sys.stderr); sys.exit(1)
         elif (arg == "-t"):
             i += 1
             try: max_time = int(sys.argv[i], 10)
-            except: print >> sys.stderr, usage; sys.exit(1)
+            except: print(usage, file=sys.stderr); sys.exit(1)
         elif (arg == "-desc"):
             i += 1
             try: description = sys.argv[i]
-            except: print >> sys.stderr, usage; sys.exit(1)
+            except: print(usage, file=sys.stderr); sys.exit(1)
         elif (arg == "-dfile"):
             i += 1
             try: description_file = sys.argv[i]
-            except: print >> sys.stderr, usage; sys.exit(1)
+            except: print(usage, file=sys.stderr); sys.exit(1)
         elif (arg == "-png"):
             png_out = True
         elif (arg == "-eps"):
@@ -1723,12 +1723,12 @@ def main():
         elif (arg == "-l"):
             print_all = True
         elif (arg == "-h"):
-            print >> sys.stderr, usage; sys.exit(1)
+            print(usage, file=sys.stderr); sys.exit(1)
         elif (arg == "-version"):
-            print >> sys.stdout, "@ARCHIVE_VERSION@";
+            print("@ARCHIVE_VERSION@");
             sys.exit(0);
         else:
-            print >> sys.stderr, "Unknown command line argument: " + arg
+            print("Unknown command line argument: " + arg, file=sys.stderr)
             sys.exit(1)
         i += 1
 
@@ -1744,14 +1744,14 @@ def main():
 
     # check that required arguments given
     if (pos_seq_file_name == None):
-        print >> sys.stderr, usage; sys.exit(1)
+        print(usage, file=sys.stderr); sys.exit(1)
 
     # reset maxw to minw if maxw not given and minw is larger
     if minw > maxw:
         if maxw == -1:
             maxw = minw # FIXME jj - this assignment looks like a mistake. I suggest max(maxk, minw)
         else:
-            print >> sys.stderr, "minw (%d) must not be greater than maxw (%d)" % (minw, maxw); sys.exit(1)
+            print("minw (%d) must not be greater than maxw (%d)" % (minw, maxw), file=sys.stderr); sys.exit(1)
 
     # initialze width range
     if minw == -1:
@@ -1760,7 +1760,7 @@ def main():
         maxw = maxk
 
     if mink > maxk:
-        print >> sys.stderr, "mink (%d) must not be greater than maxk (%d)" % (mink, maxk); sys.exit(1)
+        print("mink (%d) must not be greater than maxk (%d)" % (mink, maxk), file=sys.stderr); sys.exit(1)
 
     # check that core size not larger than maxw
     maxk = min(maxw, maxk)
@@ -1776,8 +1776,8 @@ def main():
     except OSError as exc:
         if exc.errno == errno.EEXIST:
             if not clobber:
-                print >> sys.stderr, ("output directory (%s) already exists "
-                "but DREME was not told to clobber it") % (outdir); sys.exit(1)
+                print(("output directory (%s) already exists "
+                "but DREME was not told to clobber it") % (outdir), file=sys.stderr); sys.exit(1)
         else: raise
 
     #
@@ -1785,16 +1785,16 @@ def main():
     # returning a list of strings
     #
     if _verbosity >= NORMAL_VERBOSE:
-        print "Reading positive sequences", pos_seq_file_name, "..."
+        print("Reading positive sequences", pos_seq_file_name, "...")
     pos_seqs = sequence.convert_ambigs(sequence.readFASTA(pos_seq_file_name, None, True), alph)
     if neg_seq_file_name:
         if _verbosity >= NORMAL_VERBOSE:
-            print "Reading negative sequences", neg_seq_file_name, "..."
+            print("Reading negative sequences", neg_seq_file_name, "...")
         neg_seqs = sequence.convert_ambigs(sequence.readFASTA(neg_seq_file_name, None, True), alph)
     else:
         # use dinucleotide-shuffled positive sequences
         if _verbosity >= NORMAL_VERBOSE:
-            print "Shuffling positive sequences..."
+            print("Shuffling positive sequences...")
         random.seed(seed)               # so repeatable!
         neg_seqs = [ shuffle.dinuclShuffle(s, alph) for s in pos_seqs ]
 
@@ -1834,7 +1834,7 @@ def main():
             signal.signal(signal.SIGALRM, timeout_handler)
         while (True):
             if _verbosity >= NORMAL_VERBOSE:
-                print "Looking for motif {0:d}...".format(nmotifs+1)
+                print("Looking for motif {0:d}...".format(nmotifs+1))
             word = ""
             rc_word = ""
             pvalue = 0
@@ -1879,8 +1879,8 @@ def main():
                 break
 
         if _verbosity >= NORMAL_VERBOSE:
-            print "Stopping due to hitting the maximum {0:s}.".format(
-                    stop_cause)
+            print("Stopping due to hitting the maximum {0:s}.".format(
+                    stop_cause))
             elapsed = time.time() - start_time;
             print("{0:d} motifs with E-value < {1:g} found in "
                     "{2:.1f} seconds.".format(nmotifs, ethresh, elapsed))

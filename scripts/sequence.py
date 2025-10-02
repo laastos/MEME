@@ -40,7 +40,7 @@ class Sequence(object):
             alpha = alphabet.getBySeq(self.data)
             if alpha == None:
                 raise RuntimeError("Could not identify alphabet from sequence")
-        elif isinstance(alpha, basestring):
+        elif isinstance(alpha, str):
             alphaname = alpha
             alpha = alphabet.getByName(alphaname)
             if alpha == None:
@@ -98,7 +98,7 @@ class Sequence(object):
 
     def nice(self):
         """ A short description of the sequence """
-        print self.getName(), ":", self.getLen()
+        print(self.getName(), ":", self.getLen())
 
 def readStrings(filename):
     """ Read one or more lines of text from a file--for example an alignment.
@@ -131,8 +131,8 @@ def readFASTA(filename, alpha = None, string_only = False):
                     else:
                         seqnew = Sequence(seqdata, alpha, seqname, seqinfo)
                     seqlist.append(seqnew)
-                except RuntimeError, e:
-                    print >> sys.stderr, "Warning: "+seqname+" is invalid (ignored): ", e
+                except RuntimeError as e:
+                    print("Warning: "+seqname+" is invalid (ignored): ", e, file=sys.stderr)
             seqinfo = thisline[1:-1]         # everything on the defline is "info"
             seqname = seqinfo.split()[0]     # up to first space
             seqdata = []
@@ -149,8 +149,8 @@ def readFASTA(filename, alpha = None, string_only = False):
             else:
                 seqnew = Sequence(seqdata, alpha, seqname, seqinfo)
             seqlist.append(seqnew)
-        except RuntimeError, e:
-            print >> sys.stderr, "Warning: " + seqname + " is invalid (ignored): ", e
+        except RuntimeError as e:
+            print("Warning: " + seqname + " is invalid (ignored): ", e, file=sys.stderr)
     else:
         raise RuntimeError("No sequences on FASTA format found in this file")
     fh.close()
@@ -177,7 +177,7 @@ def writeFASTA(sequence, filename):
             if isinstance(seq, Sequence):
                 _writeOneFASTA(seq, fh)
             else:
-                print >> sys.stderr, "Warning: could not write " + seq.getName() + " (ignored)."
+                print("Warning: could not write " + seq.getName() + " (ignored).", file=sys.stderr)
     fh.flush()
     fh.close()
 
@@ -592,10 +592,10 @@ if __name__=='__main__':
     pwm = PWM(alpha)
     pwm.setFromAlignment(aln)
     for row in pwm.pretty():
-        print row
+        print(row)
     for s in seqs:
-        print s.getName(), s.getLen(), s.getAlphabet().getSymbols()
+        print(s.getName(), s.getLen(), s.getAlphabet().getSymbols())
         for m in regexp.match( s ):
-            print "pos: %d pat: %s %4.2f" % (m[0], m[1], m[2])
+            print("pos: %d pat: %s %4.2f" % (m[0], m[1], m[2]))
         for m in pwm.match( s ):
-            print "pos: %d pat: %s %4.2f" % (m[0], m[1], m[2])
+            print("pos: %d pat: %s %4.2f" % (m[0], m[1], m[2]))
